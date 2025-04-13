@@ -1,9 +1,10 @@
 import type { GatsbyConfig } from "gatsby";
+import siteConfig from "./config.json";
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `dani-henry`,
-    siteUrl: `https://www.danihenry.com`,
+    title: siteConfig.title ? siteConfig.title : "My Portfolio",
+    siteUrl: siteConfig.siteUrl ? siteConfig.siteUrl : "https://www.myportfolio.com",
     menuLinks: [
       {
         name: "Home",
@@ -12,14 +13,16 @@ const config: GatsbyConfig = {
       {
         name: "Works",
         link: "/works",
-      },
-      {
-        name: "Media",
-        link: "/works/media",
-      },
-      {
-        name: "Sewing",
-        link: "/works/sewing",
+        submenu: [
+          {
+            name: "Media",
+            link: "/works/media",
+          },
+          {
+            name: "Sewing",
+            link: "/works/sewing",
+          },  
+        ],
       },
       {
         name: "About",
@@ -35,7 +38,7 @@ const config: GatsbyConfig = {
   // If you use VSCode you can also use the GraphQL plugin
   // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
-  plugins: ["gatsby-plugin-image", "gatsby-plugin-sitemap", "gatsby-plugin-mdx", "gatsby-plugin-sharp", "gatsby-transformer-sharp", {
+  plugins: ["gatsby-plugin-image", "gatsby-plugin-sitemap", "gatsby-plugin-mdx", "gatsby-plugin-sharp", "gatsby-transformer-sharp", "gatsby-plugin-postcss", {
     resolve: 'gatsby-source-filesystem',
     options: {
       "name": "images",

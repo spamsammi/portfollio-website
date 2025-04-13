@@ -2,4 +2,12 @@ node_modules/
 .cache/
 public
 src/gatsby-types.d.ts
-src/images/
+config.json
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.webp
+*.ico
+*.bmp
