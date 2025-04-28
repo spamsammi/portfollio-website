@@ -1,10 +1,12 @@
 import type { GatsbyConfig } from "gatsby";
-import siteConfig from "./config.json";
+import { loadSiteConfig } from './src/utils/config-loader';
+
+const siteConfig = loadSiteConfig();
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: siteConfig.title ? siteConfig.title : "My Portfolio",
-    siteUrl: siteConfig.siteUrl ? siteConfig.siteUrl : "https://www.myportfolio.com",
+    title: siteConfig.title,
+    siteUrl: siteConfig.siteUrl,
     menuLinks: [
       {
         name: "Home",

@@ -1,0 +1,6 @@
+# Default configuration file. To replace these values with your own, copy this file to config.yaml
+# in the same directory as this file and override the values you need to change.
+
+# Site metadata
+title: My Portfolio
+siteUrl: https://www.myportfolio.com
