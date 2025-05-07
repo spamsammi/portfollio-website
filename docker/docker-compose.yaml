@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  portfolio-website-dev:
+    image: portfolio-website:dev
+    build:
+      context: ${DEV_DIR:-./}/docker/server
+    ports:
+      - "${DEV_PORT:-8000}:${DEV_PORT:-8000}"
+    environment:
+      - PORT=${DEV_PORT:-8000}
+    volumes:
+      - ${DEV_DIR:-./}:/app
+
+  portfolio-website-test:
+    image: portfolio-website:test
+    build:
+      context: ${TEST_DIR:-./}/docker/server
+    ports:
+      - "${TEST_PORT:-8001}:${TEST_PORT:-8001}"
+    environment:
+      - PORT=${TEST_PORT:-8001}
+    volumes:
+      - ${TEST_DIR:-./}:/app
