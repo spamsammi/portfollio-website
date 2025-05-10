@@ -8,17 +8,18 @@ import os
 import subprocess
 
 dependencies = [
-    "git",
-    "docker",
-    "docker-compose"
+    "git --version",
+    "docker --version",
+    "docker compose version"
 ]
 
 def check_dependencies():
     for dependency in dependencies:
         try:
-            subprocess.run([dependency, "--version"], check=True)
+            subprocess.run([dependency], check=True)
         except subprocess.CalledProcessError:
-            print(f"Error: {dependency} is not installed")
+            command = ' '.join(dependency.split(' ')[:-1])
+            print(f"Error: {command} is not installed")
             sys.exit(1)
 
 def is_valid_git_repo(repo_url):
@@ -40,7 +41,7 @@ def main():
   save_dir = runner_working_dir
   os.chdir(runner_working_dir)
 
-  # Script is meant to be run via curl, so we need sato manually parse the arguments to avoid needing dependencies
+  # Script is meant to be run via curl, so we need to manually parse the arguments to avoid needing dependencies
   for arg in sys.argv[1:]:
       if arg.startswith("--repo-url="):
           repo_url = arg.split("=", 1)[1]
@@ -89,16 +90,16 @@ jobs:
           export DEV_DIR=${{ github.workspace }}/dev
           cd dev
           git pull origin ${{ github.ref_name }}
-          docker compose stop portfolio-website-dev
-          docker compose up -d portfolio-website-dev
+          make docker-stop-dev
+          make docker-run-dev
 
       - name: Update and restart test environment
         run: |
           export TEST_DIR=${{ github.workspace }}/test
           cd test
           git pull origin main
-          docker compose stop portfolio-website-test
-          docker compose up -d portfolio-website-test
+          make docker-stop-test
+          make docker-run-test
 
       - name: Clean up old Docker images
         run: docker image prune -f""")
@@ -106,11 +107,11 @@ jobs:
   # Create .env file
   with open(".env", "w") as f:
       f.write("""# Development environment settings
-DEV_DIR=./
+DEV_DIR=./dev
 DEV_PORT=8000
 
 # Test environment settings
-TEST_DIR=./
+TEST_DIR=./test
 TEST_PORT=8001
 """)
 

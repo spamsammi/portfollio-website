@@ -21,5 +21,19 @@ serve:
 build: install
 	npm run build
 
+
+### Docker ###
 docker-build:
-	./docker/build.sh
+	docker compose -f docker/docker-compose.yml build
+
+docker-run-dev:
+	docker compose -f docker/docker-compose.yml up --build -d portfolio-website-dev
+
+docker-run-test:
+	docker compose -f docker/docker-compose.yml up --build -d portfolio-website-test
+
+docker-stop-dev:
+	docker compose -f docker/docker-compose.yml stop portfolio-website-dev
+
+docker-stop-test:
+	docker compose -f docker/docker-compose.yml stop portfolio-website-test
