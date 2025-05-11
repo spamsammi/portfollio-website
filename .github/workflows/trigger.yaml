@@ -1,0 +1,22 @@
+name: Trigger CD Repo
+
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch to CD Repo
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.CD_REPO_PAT }}
+          repository: ${{ secrets.CD_REPO_NAME }}
+          event-type: build
+          client-payload: '{"branch": "${{ github.ref_name || inputs.branch }}"}'

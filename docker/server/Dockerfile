@@ -4,15 +4,20 @@
 
 FROM node:22.15.0-slim
 
-WORKDIR /app
-
 # Define environment variable for port with default value
 ENV PORT=8000
 
-# Expose 'test' port
+# Expose 'dev' port
 EXPOSE ${PORT}
 
-# Expose 'dev' port
+# Expose 'test' port
 EXPOSE 8001
 
-CMD ["bash", "-c", "make run PORT=${PORT} || (make install && make run PORT=${PORT}) || exit 1"]
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y make gcc g++ && rm -rf /var/lib/apt/lists/*
+
+# Run as non-root user so that if/when npm install runs, files created in the bind mount are not owned by root
+USER node
+
+CMD ["bash", "-c", "make run PORT=${PORT} || (make install && make run PORT=${PORT})"]
