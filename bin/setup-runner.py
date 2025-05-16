@@ -68,44 +68,42 @@ def main():
 
     # Create github actions workflow files
     os.makedirs(".github/workflows", exist_ok=True)
-    with open(".github/workflows/deploy.yml", "w") as f:
+    with open(".github/workflows/deploy.yaml", "w") as f:
         f.write(f"""name: Deploy Application
 
 on:
   push:
     branches:
-      - '**'  # Matches any branch
+      - '**'
 
 jobs:
   deploy:
     runs-on: self-hosted
-	defaults:
-      run:
-        working-directory: {working_dir}
+
+    env:
+      REPO_DIR: /mnt/home_lab/danis-portfolio-website-cd
+      BRANCH_NAME: ${{{{ github.ref_name }}}}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Always pull the latest branch and run it in the dev environment
       - name: Update and restart dev environment
         run: |
-          export DEV_DIR=${{ github.workspace }}/dev
-          cd dev
-          git pull origin ${{ github.ref_name }}
+          cd "$REPO_DIR/dev"
+          git checkout "$BRANCH_NAME" || git fetch origin "$BRANCH_NAME" && git checkout "$BRANCH_NAME"
+          git pull origin "$BRANCH_NAME"
           make docker-stop-dev
           make docker-run-dev
 
       - name: Update and restart test environment
         run: |
-          export TEST_DIR=${{ github.workspace }}/test
-          cd test
+          cd "$REPO_DIR/test"
+          git checkout main
           git pull origin main
           make docker-stop-test
           make docker-run-test
 
       - name: Clean up old Docker images
-        run: docker image prune -f""")
+        run: docker image prune -f
+""")
 
     # Create .env file
     with open(".env", "w") as f:

@@ -24,16 +24,16 @@ build: install
 
 ### Docker ###
 docker-build:
-	docker compose -f docker/docker-compose.yml build
+	docker compose -f docker/docker-compose.yaml build
 
 docker-run-dev:
-	docker compose -f docker/docker-compose.yml up --build -d portfolio-website-dev
+	docker compose -f docker/docker-compose.yaml up --build -d portfolio-website-dev
 
 docker-run-test:
-	docker compose -f docker/docker-compose.yml up --build -d portfolio-website-test
+	docker compose -f docker/docker-compose.yaml up --build -d portfolio-website-test
 
 docker-stop-dev:
-	docker compose -f docker/docker-compose.yml stop portfolio-website-dev
+	docker compose -f docker/docker-compose.yaml stop portfolio-website-dev
 
 docker-stop-test:
-	docker compose -f docker/docker-compose.yml stop portfolio-website-test
+	docker compose -f docker/docker-compose.yaml stop portfolio-website-test
