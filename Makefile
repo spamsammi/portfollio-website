@@ -2,7 +2,7 @@
 PORT ?= 8000
 
 PROJECT_DIR := $(CURDIR)
-DOCKER_COMPOSE := docker compose --project-directory $(PROJECT_DIR) -f docker/docker-compose.yaml
+DOCKER_COMPOSE := UID=$(shell id -u) GID=$(shell id -g) docker compose --project-directory $(PROJECT_DIR) -f docker/docker-compose.yaml
 
 prerequisites:
 	@eval command -v npm > /dev/null 2>&1 || (echo "npm is not installed" && exit 1)
@@ -39,3 +39,5 @@ docker-stop-dev:
 
 docker-stop-test:
 	$(DOCKER_COMPOSE) stop test
+
+docker-stop-all: docker-stop-dev docker-stop-test
