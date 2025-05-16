@@ -98,6 +98,7 @@ jobs:
           cd "$REPO_DIR/test"
           git checkout main
           git pull origin main
+          make build
           make docker-stop-test
           make docker-run-test
 

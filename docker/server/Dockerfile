@@ -4,17 +4,19 @@
 
 FROM node:22.15.0-slim
 
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y make gcc g++ && rm -rf /var/lib/apt/lists/*
-
 # Define environment variable for port with default value
 ENV PORT=8000
 
-# Expose 'test' port
+# Expose 'dev' port
 EXPOSE ${PORT}
 
-# Expose 'dev' port
+# Expose 'test' port
 EXPOSE 8001
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y make gcc g++ && rm -rf /var/lib/apt/lists/* && \
+    useradd -ms /bin/bash node
+USER node
 
 CMD ["bash", "-c", "make run PORT=${PORT} || (make install && make run PORT=${PORT}) || exit 1"]

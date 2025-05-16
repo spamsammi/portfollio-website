@@ -24,7 +24,6 @@ serve:
 build: install
 	npm run build
 
-
 ### Docker ###
 docker-build:
 	$(DOCKER_COMPOSE) build
