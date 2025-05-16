@@ -1,0 +1,16 @@
+name: Trigger CD Repo
+
+on:
+  push:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch to CD Repo
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.CD_REPO_PAT }}
+          repository: spamsammi/danis-portfolio-website-cd
+          event-type: build
+          client-payload: '{"branch": "${{ github.ref_name }}"}'

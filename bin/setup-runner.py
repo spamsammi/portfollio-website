@@ -75,6 +75,8 @@ on:
   push:
     branches:
       - '**'
+  workflow_dispatch:
+  repository_dispatch:
 
 jobs:
   deploy:
@@ -82,7 +84,7 @@ jobs:
 
     env:
       REPO_DIR: /mnt/home_lab/danis-portfolio-website-cd
-      BRANCH_NAME: ${{{{ github.ref_name }}}}
+      BRANCH_NAME: ${{ github.event.client_payload.branch || github.ref_name }}
 
     steps:
       - name: Update and restart dev environment

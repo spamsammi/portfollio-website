@@ -40,4 +40,12 @@ docker-stop-dev:
 docker-stop-test:
 	$(DOCKER_COMPOSE) stop test
 
+docker-remove-dev:
+	$(DOCKER_COMPOSE) rm -f dev
+
+docker-remove-test:
+	$(DOCKER_COMPOSE) rm -f test
+
 docker-stop-all: docker-stop-dev docker-stop-test
+
+docker-remove-all: docker-stop-all docker-remove-dev docker-remove-test
