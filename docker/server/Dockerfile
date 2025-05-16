@@ -15,8 +15,7 @@ EXPOSE 8001
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y make gcc g++ && rm -rf /var/lib/apt/lists/* && \
-    useradd -ms /bin/bash node
+RUN apt-get update && apt-get install -y make gcc g++ && rm -rf /var/lib/apt/lists/*
 USER node
 
 CMD ["bash", "-c", "make run PORT=${PORT} || (make install && make run PORT=${PORT}) || exit 1"]
