@@ -6,6 +6,8 @@ FROM node:22.15.0-slim
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y make gcc g++ && rm -rf /var/lib/apt/lists/*
+
 # Define environment variable for port with default value
 ENV PORT=8000
 

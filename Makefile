@@ -1,6 +1,9 @@
 # Default port is 8000, can be overridden with PORT=xxxx
 PORT ?= 8000
 
+PROJECT_DIR := $(CURDIR)
+DOCKER_COMPOSE := docker compose --project-directory $(PROJECT_DIR) -f docker/docker-compose.yaml
+
 prerequisites:
 	@eval command -v npm > /dev/null 2>&1 || (echo "npm is not installed" && exit 1)
 
@@ -24,16 +27,16 @@ build: install
 
 ### Docker ###
 docker-build:
-	docker compose -f docker/docker-compose.yaml build
+	$(DOCKER_COMPOSE) build
 
 docker-run-dev:
-	docker compose -f docker/docker-compose.yaml up --build -d portfolio-website-dev
+	$(DOCKER_COMPOSE) up --build -d dev
 
 docker-run-test:
-	docker compose -f docker/docker-compose.yaml up --build -d portfolio-website-test
+	$(DOCKER_COMPOSE) up --build -d test
 
 docker-stop-dev:
-	docker compose -f docker/docker-compose.yaml stop portfolio-website-dev
+	$(DOCKER_COMPOSE) stop dev
 
 docker-stop-test:
-	docker compose -f docker/docker-compose.yaml stop portfolio-website-test
+	$(DOCKER_COMPOSE) stop test

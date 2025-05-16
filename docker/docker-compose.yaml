@@ -1,24 +1,30 @@
-version: '3.8'
-
 services:
-  portfolio-website-dev:
+  dev:
     image: portfolio-website:dev
     build:
       context: ${DEV_DIR:-./}/docker/server
     ports:
       - "${DEV_PORT:-8000}:${DEV_PORT:-8000}"
     environment:
-      - PORT=${DEV_PORT:-8000}
+      - PORT=${DEV_PORT}
     volumes:
       - ${DEV_DIR:-./}:/app
+    command:
+      - bash
+      - -c
+      - 'ls -la && make run PORT=${PORT:-8000} || (make install && make run PORT=${PORT:-8000}) || exit 1'
 
-  portfolio-website-test:
+  test:
     image: portfolio-website:test
     build:
       context: ${TEST_DIR:-./}/docker/server
     ports:
       - "${TEST_PORT:-8001}:${TEST_PORT:-8001}"
     environment:
-      - PORT=${TEST_PORT:-8001}
+      - PORT=${TEST_PORT}
     volumes:
       - ${TEST_DIR:-./}:/app
+    command:
+      - bash
+      - -c
+      - 'make serve PORT=${PORT:-8001} || (make install && make serve PORT=${PORT:-8001}) || exit 1'
