@@ -2,6 +2,7 @@
 PORT ?= 8000
 
 PROJECT_DIR := $(CURDIR)
+BRANCH_NAME := main
 DOCKER_COMPOSE := docker compose --project-directory $(PROJECT_DIR) -f docker/docker-compose.yaml
 
 prerequisites:
@@ -28,24 +29,21 @@ build: install
 docker-build:
 	$(DOCKER_COMPOSE) build
 
+docker-stop:
+	$(DOCKER_COMPOSE) stop
+
+docker-remove: docker-stop
+	$(DOCKER_COMPOSE) rm -f
+
 docker-run-dev:
 	$(DOCKER_COMPOSE) up --build -d dev
 
 docker-run-test:
 	$(DOCKER_COMPOSE) up --build -d test
 
-docker-stop-dev:
-	$(DOCKER_COMPOSE) stop dev
-
-docker-stop-test:
-	$(DOCKER_COMPOSE) stop test
-
-docker-remove-dev:
-	$(DOCKER_COMPOSE) rm -f dev
-
-docker-remove-test:
-	$(DOCKER_COMPOSE) rm -f test
-
-docker-stop-all: docker-stop-dev docker-stop-test
-
-docker-remove-all: docker-stop-all docker-remove-dev docker-remove-test
+### Runner ###
+# WARNING: This will override all changes made and checkout the branch given by BRANCH_NAME (default is main)
+force-update:
+	git fetch origin
+	git checkout -f $(BRANCH_NAME)
+	git reset --hard origin/$(BRANCH_NAME)

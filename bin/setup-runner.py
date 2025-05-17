@@ -47,6 +47,9 @@ def main():
             repo_url = arg.split("=", 1)[1]
         if arg.startswith("--runner-working-dir="):
             working_dir = arg.split("=", 1)[1]
+            
+    # Set to the absolute path for the runner working directory (needed for github actions)
+    working_dir = os.path.abspath(working_dir)
 
     # Check to make sure that the repo url is provided and valid
     if repo_url is None:
@@ -58,26 +61,32 @@ def main():
 
     print(f"Setting up runner with repo: {repo_url} in working dir: {working_dir}")
     os.makedirs(working_dir, exist_ok=True)
-    # Clone the repo in "dev" and "test" directories
-    try:
-        subprocess.run(["git", "clone", repo_url, "dev"])
-        subprocess.run(["git", "clone", repo_url, "test"])
-    except subprocess.CalledProcessError as e:
-        print(f"Error: Failed to clone a repository: {e}")
-        sys.exit(1)
+    
+    # Clone the repo in "dev" and "test" directories, or update them if they already exist
+    for env in ["dev", "test"]:
+        if not os.path.exists(env):
+            try:
+                subprocess.run(["git", "clone", repo_url, env], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Error: Failed to clone repository into {env}: {e}")
+                sys.exit(1)
+        else:
+            print(f"Directory '{env}' already exists. Updating repository...")
+            try:
+                subprocess.run(["git", "-C", env, "fetch", "origin"], check=True)
+                subprocess.run(["git", "-C", env, "checkout", "-f", "main"], check=True)
+                subprocess.run(["git", "-C", env, "reset", "--hard", f"origin/main"], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Error: Failed to update repository in {env}: {e}")
+                sys.exit(1)
 
-    # Create github actions workflow files
+    # Create/update github actions workflow files
     os.makedirs(".github/workflows", exist_ok=True)
     with open(".github/workflows/deploy.yaml", "w") as f:
         f.write(f"""name: Deploy Application
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to deploy'
-        required: true
-        default: 'main'
   repository_dispatch:
 
 jobs:
@@ -92,16 +101,14 @@ jobs:
       - name: Update and restart dev environment
         run: |
           cd "$REPO_DIR/dev"
-          git checkout "$BRANCH_NAME" || git fetch origin "$BRANCH_NAME" && git checkout "$BRANCH_NAME"
-          git pull origin "$BRANCH_NAME"
+          make force-update BRANCH_NAME=$BRANCH_NAME
           make docker-stop-dev
           make docker-run-dev
 
       - name: Update and restart test environment
         run: |
           cd "$REPO_DIR/test"
-          git checkout main
-          git pull origin main
+          make force-update
           make docker-stop-test
           make docker-run-test
 
@@ -109,7 +116,7 @@ jobs:
         run: docker image prune -f
 """)
 
-    # Create .env file
+    # Create/update .env file
     with open(".env", "w") as f:
         f.write("""# Development environment settings
 DEV_DIR=./dev
@@ -120,7 +127,7 @@ TEST_DIR=./test
 TEST_PORT=8001
 """)
 
-    # Setup .gitignore file
+    # Create/update .gitignore file
     with open(".gitignore", "w") as f:
         f.write("""dev/
 test/
