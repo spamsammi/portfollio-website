@@ -72,10 +72,12 @@ def main():
         f.write(f"""name: Deploy Application
 
 on:
-  push:
-    branches:
-      - '**'
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
   repository_dispatch:
 
 jobs:
@@ -84,7 +86,7 @@ jobs:
 
     env:
       REPO_DIR: /mnt/home_lab/danis-portfolio-website-cd
-      BRANCH_NAME: ${{ github.event.client_payload.branch || github.ref_name }}
+      BRANCH_NAME: ${{ github.event.client_payload.branch || inputs.branch }}
 
     steps:
       - name: Update and restart dev environment
