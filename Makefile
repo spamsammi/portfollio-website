@@ -29,6 +29,9 @@ build: install
 docker-build:
 	$(DOCKER_COMPOSE) build
 
+docker-run:
+	$(DOCKER_COMPOSE) up --build -d
+
 docker-stop:
 	$(DOCKER_COMPOSE) stop
 
@@ -40,6 +43,12 @@ docker-run-dev:
 
 docker-run-test:
 	$(DOCKER_COMPOSE) up --build -d test
+
+docker-stop-dev:
+	$(DOCKER_COMPOSE) stop dev
+
+docker-stop-test:
+	$(DOCKER_COMPOSE) stop test
 
 ### Runner ###
 # WARNING: This will override all changes made and checkout the branch given by BRANCH_NAME (default is main)

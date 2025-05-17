@@ -39,17 +39,20 @@ def main():
     repo_url = None
     working_dir = os.getcwd()
     save_dir = working_dir
-    os.chdir(working_dir)
 
     # Script is meant to be run via curl, so we need to manually parse the arguments to avoid needing dependencies
     for arg in sys.argv[1:]:
         if arg.startswith("--repo-url="):
             repo_url = arg.split("=", 1)[1]
-        if arg.startswith("--runner-working-dir="):
+        elif arg.startswith("--runner-working-dir="):
             working_dir = arg.split("=", 1)[1]
+        else:
+            print(f"Error: Unknown argument: {arg}")
+            sys.exit(1)
             
     # Set to the absolute path for the runner working directory (needed for github actions)
     working_dir = os.path.abspath(working_dir)
+    os.chdir(working_dir)
 
     # Check to make sure that the repo url is provided and valid
     if repo_url is None:
@@ -95,7 +98,7 @@ jobs:
 
     env:
       REPO_DIR: {working_dir}
-      BRANCH_NAME: ${{{{ github.event.client_payload.branch || inputs.branch }}}}
+      BRANCH_NAME: ${{{{ github.event.client_payload.branch || github.event.repository.default_branch }}}}
 
     steps:
       - name: Update and restart dev environment
