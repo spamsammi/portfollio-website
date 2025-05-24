@@ -12,7 +12,7 @@ services:
     command:
       - bash
       - -c
-      - 'make run PORT=${PORT:-8000} || (make install && make run PORT=${PORT:-8000})'
+      - 'make run PORT=${PORT:-8000} || (rm -rf node_modules && make install) && make run PORT=${PORT:-8000}'
 
   test:
     image: portfolio-website:test
@@ -27,4 +27,4 @@ services:
     command:
       - bash
       - -c
-      - 'make build && make serve PORT=${PORT:-8001}'
+      - 'make build || (rm -rf node_modules && make install && make build) && make serve PORT=${PORT:-8001}'

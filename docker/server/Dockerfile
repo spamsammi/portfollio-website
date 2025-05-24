@@ -1,16 +1,15 @@
 # This Dockerfile is intended to have this repository mounted as a volume to the /home/node directory.
 # Since the repository can be updated, it will attempt to run "make run" to start the server,
 # and if that fails, it will try to install the dependencies ("make install") and run "make run" again.
+#
+# NOTE: The image may be required to build the node-gyp binary on the host machine.
+#       Hence, why python3 is installed.
 
 FROM node:22.15.0-slim
 
-# Define environment variable for port with default value
-ENV PORT=8000
 
-# Expose 'dev' port
-EXPOSE ${PORT}
-
-# Expose 'test' port
+# Expose  'dev' and 'test' ports
+EXPOSE 8000
 EXPOSE 8001
 
 RUN mkdir -p /app && \
