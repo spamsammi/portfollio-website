@@ -9,6 +9,8 @@ services:
       - PORT=${DEV_PORT}
     volumes:
       - ${DEV_DIR:-./}:/app
+      - ${IMAGES_PATH:-./src/images/}:/app/src/images/
+      - ${CONFIG_PATH:-./config.yaml}:/app/config.yaml
     command:
       - bash
       - -c
@@ -24,6 +26,8 @@ services:
       - PORT=${TEST_PORT}
     volumes:
       - ${TEST_DIR:-./}:/app
+      - ${IMAGES_PATH:-./src/images/}:/app/src/images/
+      - ${CONFIG_PATH:-./config.yaml}:/app/config.yaml
     command:
       - bash
       - -c

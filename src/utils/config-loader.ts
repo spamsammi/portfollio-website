@@ -8,7 +8,9 @@ import path from 'path';
  * @returns The loaded configuration object
  */
 export function loadSiteConfig<T = Record<string, any>>(baseDir: string = process.cwd()): T {
-  const customConfigPath = path.resolve(baseDir, 'config.yaml');
+  const customConfigPath = process.env.CONFIG_PATH
+    ? path.resolve(process.env.CONFIG_PATH)
+    : path.resolve(baseDir, 'config.yaml');
   const defaultConfigPath = path.resolve(baseDir, 'default-config.yaml');
   
   console.log('Current working directory:', baseDir);

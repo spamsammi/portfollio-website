@@ -6,6 +6,7 @@
 import sys
 import os
 import subprocess
+import shutil
 
 dependencies = [
     "git --version",
@@ -38,6 +39,7 @@ def main():
     # to prevent any inccorrect repoisitories getting cloned if this repository is forked.
     repo_url = None
     working_dir = os.getcwd()
+    images_path = "src/images/"
     save_dir = working_dir
 
     # Script is meant to be run via curl, so we need to manually parse the arguments to avoid needing dependencies
@@ -46,6 +48,8 @@ def main():
             repo_url = arg.split("=", 1)[1]
         elif arg.startswith("--runner-working-dir="):
             working_dir = arg.split("=", 1)[1]
+        elif arg.startswith("--images-path="):
+            images_path = arg.split("=", 1)[1]
         else:
             print(f"Error: Unknown argument: {arg}")
             sys.exit(1)
@@ -89,6 +93,7 @@ def main():
         f.write(f"""name: Deploy Application
 
 on:
+  push:
   workflow_dispatch:
   repository_dispatch:
 
@@ -121,20 +126,61 @@ jobs:
 
     # Create/update .env file
     with open(".env", "w") as f:
-        f.write("""# Development environment settings
-DEV_DIR=./dev
+        f.write(f"""# Development environment settings
+DEV_DIR={working_dir}/dev
 DEV_PORT=8000
 
 # Test environment settings
-TEST_DIR=./test
+TEST_DIR={working_dir}/test
 TEST_PORT=8001
+
+# Configuration settings
+CONFIG_PATH={working_dir}/config.yaml
+IMAGES_PATH={working_dir}/{images_path}
 """)
+    # Symlink the .env file to the dev and test directories; if this fails, just copy them
+    try:
+        os.symlink(os.path.join(working_dir, ".env"), os.path.join(working_dir, "dev", ".env"), target_is_directory=True)
+        os.symlink(os.path.join(working_dir, ".env"), os.path.join(working_dir, "test", ".env"), target_is_directory=True)
+    except:
+        shutil.copy(os.path.join(working_dir, ".env"), os.path.join(working_dir, "dev", ".env"))
+        shutil.copy(os.path.join(working_dir, ".env"), os.path.join(working_dir, "test", ".env"))
+        
+    # Create the images directory and add a .gitkeep file to it
+    os.makedirs(images_path, exist_ok=True)
+    open(os.path.join(images_path, ".gitkeep"), "w").close()
+
+    # Create a default config.yaml file if one does not exist; copy the one from dev/default-config.yaml
+    if not os.path.exists(os.path.join(working_dir, "config.yaml")):
+        shutil.copy(os.path.join(working_dir, "dev", "default-config.yaml"), os.path.join(working_dir, "config.yaml"))
 
     # Create/update .gitignore file
     with open(".gitignore", "w") as f:
         f.write("""dev/
 test/
-.env
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.webp
+*.ico
+*.bmp
+""")
+        
+    # Create/update Makefile
+    with open(os.path.join(working_dir, "Makefile"), "w") as f:
+        f.write("""docker-run:
+	make -C dev docker-run-dev
+	make -C test docker-run-test
+
+docker-stop:
+	make -C dev docker-stop-dev
+	make -C test docker-stop-test
+
+docker-remove:
+	make -C dev docker-remove-dev
+	make -C test docker-remove-test
 """)
         
     # Swap back to the original working directory

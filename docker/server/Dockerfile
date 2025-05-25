@@ -7,10 +7,8 @@
 
 FROM node:22.15.0-slim
 
-
-# Expose  'dev' and 'test' ports
-EXPOSE 8000
-EXPOSE 8001
+ENV PORT=8000
+EXPOSE ${PORT}
 
 RUN mkdir -p /app && \
     chown -R node:node /app && \

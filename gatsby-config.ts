@@ -44,7 +44,7 @@ const config: GatsbyConfig = {
     resolve: 'gatsby-source-filesystem',
     options: {
       "name": "images",
-      "path": "./src/images/"
+      "path": process.env.IMAGES_PATH || "./src/images/"
     },
     __key: "images"
   }, {
