@@ -111,14 +111,14 @@ jobs:
           cd "$REPO_DIR/dev"
           make force-update BRANCH_NAME=$BRANCH_NAME
           make docker-stop-dev
-          make docker-run-dev
+          make docker-run-dev ENV_FILE="--env-file ../.env"
 
       - name: Update and restart test environment
         run: |
           cd "$REPO_DIR/test"
           make force-update
           make docker-stop-test
-          make docker-run-test
+          make docker-run-test ENV_FILE="--env-file ../.env"
 
       - name: Clean up old Docker images
         run: docker image prune -f

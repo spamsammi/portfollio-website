@@ -3,7 +3,7 @@ PORT ?= 8000
 
 PROJECT_DIR := $(CURDIR)
 BRANCH_NAME := main
-ENV_FILE := # Leave blank for default environment, or set to -f .env for custom env file
+ENV_FILE := # Leave blank for default environment, or set to "--env-file <directory>/.env" for custom env file
 DOCKER_COMPOSE := docker compose --project-directory $(PROJECT_DIR) -f docker/docker-compose.yaml $(ENV_FILE)
 
 prerequisites:
@@ -27,6 +27,7 @@ build: install
 	npm run build
 
 ### Docker ###
+# Both dev and test
 docker-build:
 	$(DOCKER_COMPOSE) build
 
@@ -39,20 +40,22 @@ docker-stop:
 docker-remove: docker-stop
 	$(DOCKER_COMPOSE) rm -f
 
+# dev
 docker-run-dev:
 	$(DOCKER_COMPOSE) up --build -d dev
-
-docker-run-test:
-	$(DOCKER_COMPOSE) up --build -d test
 
 docker-stop-dev:
 	$(DOCKER_COMPOSE) stop dev
 
-docker-stop-test:
-	$(DOCKER_COMPOSE) stop test
-
 docker-remove-dev: docker-stop-dev
 	$(DOCKER_COMPOSE) rm -f dev
+
+# test
+docker-run-test:
+	$(DOCKER_COMPOSE) up --build -d test
+
+docker-stop-test:
+	$(DOCKER_COMPOSE) stop test
 
 docker-remove-test: docker-stop-test
 	$(DOCKER_COMPOSE) rm -f test
