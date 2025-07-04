@@ -138,13 +138,6 @@ TEST_PORT=8001
 CONFIG_PATH={working_dir}/config.yaml
 IMAGES_PATH={working_dir}/{images_path}
 """)
-    # Symlink the .env file to the dev and test directories; if this fails, just copy them
-    try:
-        os.symlink(os.path.join(working_dir, ".env"), os.path.join(working_dir, "dev", ".env"), target_is_directory=True)
-        os.symlink(os.path.join(working_dir, ".env"), os.path.join(working_dir, "test", ".env"), target_is_directory=True)
-    except:
-        shutil.copy(os.path.join(working_dir, ".env"), os.path.join(working_dir, "dev", ".env"))
-        shutil.copy(os.path.join(working_dir, ".env"), os.path.join(working_dir, "test", ".env"))
         
     # Create the images directory and add a .gitkeep file to it
     os.makedirs(images_path, exist_ok=True)
@@ -171,8 +164,8 @@ test/
     # Create/update Makefile
     with open(os.path.join(working_dir, "Makefile"), "w") as f:
         f.write("""docker-run:
-	make -C dev docker-run-dev
-	make -C test docker-run-test
+	make -C dev docker-run-dev ENV_FILE="--env-file ../.env"
+	make -C test docker-run-test ENV_FILE="--env-file ../.env"
 
 docker-stop:
 	make -C dev docker-stop-dev

@@ -1,5 +1,6 @@
 services:
   dev:
+    container_name: portfolio-website-dev
     image: portfolio-website:dev
     build:
       context: "${DEV_DIR:-./}/docker/server"
@@ -17,6 +18,7 @@ services:
       - 'make run PORT=${PORT:-8000} || (rm -rf node_modules && make install) && make run PORT=${PORT:-8000}'
 
   test:
+    container_name: portfolio-website-test
     image: portfolio-website:test
     build:
       context: "${TEST_DIR:-./}/docker/server"

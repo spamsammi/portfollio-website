@@ -3,7 +3,8 @@ PORT ?= 8000
 
 PROJECT_DIR := $(CURDIR)
 BRANCH_NAME := main
-DOCKER_COMPOSE := docker compose --project-directory $(PROJECT_DIR) -f docker/docker-compose.yaml
+ENV_FILE := # Leave blank for default environment, or set to -f .env for custom env file
+DOCKER_COMPOSE := docker compose --project-directory $(PROJECT_DIR) -f docker/docker-compose.yaml $(ENV_FILE)
 
 prerequisites:
 	@eval command -v npm > /dev/null 2>&1 || (echo "npm is not installed" && exit 1)
