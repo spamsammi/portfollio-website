@@ -16,7 +16,9 @@ services:
       - bash
       - -c
       - 'make run PORT=${PORT:-8000} || (rm -rf node_modules && make install) && make run PORT=${PORT:-8000}'
-
+    restart: unless-stopped
+    networks:
+      - portfolio-website-network-dev
   test:
     container_name: portfolio-website-test
     image: portfolio-website:test
@@ -34,3 +36,9 @@ services:
       - bash
       - -c
       - 'make build || (rm -rf node_modules && make install && make build) && make serve PORT=${PORT:-8001}'
+    restart: unless-stopped
+    networks:
+      - portfolio-website-network-test
+networks:
+  portfolio-website-network-dev:
+  portfolio-website-network-test:
