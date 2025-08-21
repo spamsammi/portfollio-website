@@ -17,8 +17,12 @@ const config: GatsbyConfig = {
         link: "/works",
         submenu: [
           {
-            name: "Media",
-            link: "/works/media",
+            name: "Digital Art",
+            link: "/works/digital-art",
+          },
+          {
+            name: "Traditional Art",
+            link: "/works/traditional-art",
           },
           {
             name: "Sewing",
